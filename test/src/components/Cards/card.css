@@ -1,0 +1,154 @@
+.fundedproject-card {
+  padding: 12px;
+  background: #414141;
+  border-radius: 12px;
+  margin-bottom: 44px;
+  height: auto;
+}
+.fundedproject-card__image {
+  margin-bottom: 12px;
+}
+.fundedproject-card__heading {
+  font-weight: 500;
+  font-size: 34px;
+  line-height: 130%;
+  /* or 44px */
+
+  /* 6 Color/Gray/8 */
+
+  color: #fcfcfd;
+  max-width: 254px;
+  margin-bottom: 4px;
+}
+
+.fundedproject-card-bcmd {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 150%;
+  /* identical to box height, or 24px */
+
+  text-align: center;
+  letter-spacing: 0.005em;
+
+  /* 6 Color/Gray/5 */
+
+  color: #c0c0c0;
+}
+.fundedproject-card-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-top: 16px;
+}
+.fundedproject-card__total-text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 142%;
+  /* identical to box height, or 20px */
+
+  text-align: center;
+  letter-spacing: 0.0168em;
+  font-feature-settings: "tnum" on, "lnum" on;
+
+  /* 6 Color/Gray/7 */
+
+  color: #f4f5f6;
+}
+.fundedproject-card__total-number {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 138%;
+  /* identical to box height, or 28px */
+
+  text-align: center;
+  letter-spacing: 0.0075em;
+
+  /* 6 Color/Gray/8 */
+
+  color: #fcfcfd;
+}
+.fundedproject-card-allocation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.fundedproject-card__allocation-text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 142%;
+  /* identical to box height, or 20px */
+
+  text-align: center;
+  letter-spacing: 0.0168em;
+  font-feature-settings: "tnum" on, "lnum" on;
+
+  /* 6 Color/Gray/7 */
+
+  color: #f4f5f6;
+}
+.fundedproject-card__allocation-number {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 138%;
+  /* identical to box height, or 28px */
+
+  text-align: center;
+  letter-spacing: 0.0075em;
+
+  /* 6 Color/Gray/8 */
+
+  color: #fcfcfd;
+}
+.fundedproject-card__footer {
+  text-align: right;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 142%;
+  /* identical to box height, or 20px */
+  letter-spacing: 0.0168em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  /* 6 Color/Gray/7 */
+  gap: 4px;
+  color: #f4f5f6;
+}
+.fundedproject-card__header {
+  display: flex;
+  justify-content: space-between;
+}
+.fundedproject-card__images {
+  position: relative;
+}
+.fundedproject-card__image {
+  width: 352px;
+  height: 164px;
+  object-fit: cover;
+}
+.fundedproject-card__status {
+  position: absolute;
+  padding: 4px 12px;
+  background: #238fab;
+  top: 10px;
+  right: 20px;
+  border-radius: 4px;
+}
+.fundedproject-card__image-poster {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  width: 80px;
+  height: 80px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  object-fit: cover;
+}
+@media screen and (max-width: 1024px) {
+  .fundedproject-card__image{
+    width: 100%;
+    object-fit: cover;
+  }
+}
