@@ -3,21 +3,24 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { Input, Slider } from "antd";
 import Cards from "../Cards/Cards";
 import Coin from "../Coins/Coin";
-import { callApi } from "../api/fundedProjectApi";
+import { callApi } from "../../api/fundedProjectApi";
 import "./fundedproject.css";
 import { getBlockTotal } from "../../service/apiTransaction";
+import useDebounce from "../../hooks/useDebounce";
+import CardLoading from "../Cards/CardLoading";
 const FundedProject = () => {
   const [dataCards, setDataCards] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalRecord, setTotalRecord] = useState(0);
-  const [avgBlockTime, setAvgBlockTime] = useState(0)
-  const [secondMaxTx, setSecondMaxTx] = useState(0)
-  const [totalTransactions, setTotalTransactions] = useState(0)
-  const [avgEthTransaction, setAvgEthTransaction] = useState(0)
+  const [avgBlockTime, setAvgBlockTime] = useState("...");
+  const [secondMaxTx, setSecondMaxTx] = useState("...");
+  const [totalTransactions, setTotalTransactions] = useState("...");
+  const [avgEthTransaction, setAvgEthTransaction] = useState("...");
   const [filters, setFilters] = useState({
     page: 1,
     pageSize: 8,
   });
+  const queryDebounce = useDebounce(filters, 500);
   const coins = [
     {
       title: "Total transactions:",
@@ -38,17 +41,17 @@ const FundedProject = () => {
   const fetchData = async (filters) => {
     const { data } = await callApi(filters);
     setDataCards(data.data.fundProjects);
-    setTotalRecord(data.data.totalRecords);
+    setLoading(false);
   };
-  
+
   const fetchTransaction = async () => {
-    let a = await getBlockTotal()
-    setTotalTransactions(a.totalTransactions)
+    let a = await getBlockTotal();
+    setTotalTransactions(a.totalTransactions);
     setAvgBlockTime(a.avgBlockTime);
-    setSecondMaxTx(a.secondMaxArr)
-    setAvgEthTransaction(a.avgEth.toFixed(3))
-}
- 
+    setSecondMaxTx(a.secondMaxArr);
+    setAvgEthTransaction(a.avgEth.toFixed(3));
+  };
+
   const loadMore = async () => {
     setCurrentPage(currentPage + 1);
     const { data } = await callApi({
@@ -83,7 +86,7 @@ const FundedProject = () => {
   useEffect(() => {
     fetchTransaction();
     fetchData(filters);
-  }, [filters]);
+  }, [queryDebounce]);
   return (
     <section className="fundedproject">
       <div className="container">
@@ -171,11 +174,27 @@ const FundedProject = () => {
               hasMore={true}
             >
               <div className="row">
-                {dataCards.map((e, i) => (
-                  <div className="column" key={i}>
-                    <Cards data={e} />
-                  </div>
-                ))}
+                {loading && (
+                  <>
+                    <CardLoading />
+                    <CardLoading />
+                    <CardLoading />
+                    <CardLoading />
+                    <CardLoading />
+                    <CardLoading />
+                    <CardLoading />
+                    <CardLoading />
+                  </>
+                )}
+              </div>
+              <div className="row">
+                {!loading &&
+                  dataCards.length > 0 &&
+                  dataCards.map((e, i) => (
+                    <div className="column" key={i}>
+                      <Cards data={e} />
+                    </div>
+                  ))}
               </div>
             </InfiniteScroll>
           </div>
