@@ -1,9 +1,9 @@
 import React from "react";
 import "./card.css";
-import cover from "../../assets/images/cover.png";
 import { CoinSVG } from "../../assets/svg/svg";
 const Cards = (props) => {
   const items = props.data;
+  const date = new Date(items.startOn).toLocaleDateString("vi-VI");
   return (
     <div className="fundedproject-card">
       <div className="fundedproject-card__images">
@@ -41,7 +41,7 @@ const Cards = (props) => {
 
       <div className="fundedproject-card__footer">
         <span className="fundedproject-card-status">IDO starts on </span>
-        <span className="fundedproject-card-startOn">{items.startOn}</span>
+        <span className="fundedproject-card-startOn">{`${date}`}</span>
       </div>
     </div>
   );

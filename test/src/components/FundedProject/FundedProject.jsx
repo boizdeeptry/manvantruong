@@ -1,63 +1,89 @@
 import React, { useEffect, useState } from "react";
-// import InfiniteScroll from "react-infinite-scroll-component";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { Input, Slider } from "antd";
 import Cards from "../Cards/Cards";
 import Coin from "../Coins/Coin";
-import axios from "axios";
+import { callApi } from "../api/fundedProjectApi";
 import "./fundedproject.css";
+import { getBlockTotal } from "../../service/apiTransaction";
 const FundedProject = () => {
   const [dataCards, setDataCards] = useState([]);
-  const [visible, setVisible] = useState(8);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalRecord, setTotalRecord] = useState(0);
+  const [avgBlockTime, setAvgBlockTime] = useState(0)
+  const [secondMaxTx, setSecondMaxTx] = useState(0)
+  const [totalTransactions, setTotalTransactions] = useState(0)
+  const [avgEthTransaction, setAvgEthTransaction] = useState(0)
+  const [filters, setFilters] = useState({
+    page: 1,
+    pageSize: 8,
+  });
   const coins = [
     {
       title: "Total transactions:",
       color: "#F0D042",
-      number: 79,
+      number: totalTransactions,
     },
     {
       title: "AVG of block time",
       color: "#31B4D9",
-      number: 19.455,
+      number: avgBlockTime,
     },
     {
       title: "AVG of ETH/transactions",
       color: "#1F8B24",
-      number: "1.10 ETH",
+      number: `${avgEthTransaction} ETH`,
     },
   ];
-  // const fetchMoreData = () => {
-  //   // a fake async api call like which sends
-  //   // 20 more records in 1.5 secs
-  //   setTimeout(() => {
-  //     this.setDataCards({
-  //       items: dataCards.concat(Array.from({ length: 8 })),
-  //     });
-  //   }, 1500);
-  // };
-
-  const showMoreItems = () => {
-    setVisible((pre) => pre + 8);
+  const fetchData = async (filters) => {
+    const { data } = await callApi(filters);
+    setDataCards(data.data.fundProjects);
+    setTotalRecord(data.data.totalRecords);
   };
-  const callApi = async () => {
-    const response = await axios.post(
-      `http://139.99.62.190:8000/api/v1/fund_projects/filter`,
-      {
-        page: 1,
-        pageSize: 20,
-        symbol: "",
-        name: "",
-        status: "SOLD_OUT",
-        totalRaise: [100, 200],
-        "personal Allocation": [0.07, 0.08],
-      }
-    );
-    const data = response.data.data.fundProjects;
-    console.log(data);
-    setDataCards(data);
+  
+  const fetchTransaction = async () => {
+    let a = await getBlockTotal()
+    setTotalTransactions(a.totalTransactions)
+    setAvgBlockTime(a.avgBlockTime);
+    setSecondMaxTx(a.secondMaxArr)
+    setAvgEthTransaction(a.avgEth.toFixed(3))
+}
+ 
+  const loadMore = async () => {
+    setCurrentPage(currentPage + 1);
+    const { data } = await callApi({
+      ...filters,
+      pageSize: 4,
+      page: currentPage + 1,
+    });
+    if (data.statusCode === 1) {
+      setDataCards([...dataCards, ...data.data.fundProjects]);
+    }
+  };
+
+  const handleClear = async () => {
+    const clearFilter = {
+      page: 1,
+      pageSize: 8,
+    };
+    const { data } = await callApi(clearFilter);
+    if (data.statusCode === 1) {
+      setDataCards(data.data.fundProjects);
+    }
+    setFilters(clearFilter);
+  };
+
+  const handleFilter = async () => {
+    const { data } = await callApi(filters);
+    if (data.statusCode === 1) {
+      setDataCards(data.data.fundProjects);
+    }
   };
 
   useEffect(() => {
-    callApi();
-  }, []);
+    fetchTransaction();
+    fetchData(filters);
+  }, [filters]);
   return (
     <section className="fundedproject">
       <div className="container">
@@ -65,39 +91,95 @@ const FundedProject = () => {
           <h1 className="fundedproject-heading">
             2nd largest of Transactions:
           </h1>
-          <p className="fundedproject-desc">1.10 ETH</p>
+          <p className="fundedproject-desc">{secondMaxTx} ETH</p>
           <div className="fundedproject-avg">
             {coins.map((e, i) => (
               <Coin key={i} data={e} />
             ))}
           </div>
           <div className="fundedproject-cards">
-            {/* <div className="fundedproject-filters">
-              <input
-                type="text"
-                placeholder="Search your Funded... "
-                className="fundedproject-filter"
+            <div className="fundedproject-cards-input">
+              <Input
+                placeholder="Name"
+                onChange={(e) => {
+                  setFilters({
+                    ...filters,
+                    name: e.target.value.toLowerCase(),
+                  });
+                }}
               />
-              <span className="fundedproject-filter__icon">
-                <ion-icon name="search"></ion-icon>
-              </span>
-            </div> */}
-            {/* <InfiniteScroll
-              dataLength={dataCards.length}
-              next={fetchMoreData}
-              hasMore={true}
-              loader={<h4>Loading...</h4>}
-            > */}
-            <div className="row">
-              {dataCards.slice(0, visible).map((e, i) => (
-                <div className="column" key={i}>
-                  <Cards data={e} />
-                </div>
-              ))}
+              <Input
+                placeholder="Symbol"
+                onChange={(e) => {
+                  setFilters({
+                    ...filters,
+                    symbol: e.target.value.toUpperCase(),
+                  });
+                }}
+              />
+              <Input
+                placeholder="Status"
+                onChange={(e) => {
+                  setFilters({
+                    ...filters,
+                    status: e.target.value,
+                  });
+                }}
+              />
             </div>
-            {/* </InfiniteScroll> */}
+            <div className="funded-cards-slider">
+              <p>Total Raise:</p>
+              <Slider
+                range={{ draggableTrack: true }}
+                min={100}
+                max={200}
+                defaultValue={[20, 50]}
+                onAfterChange={(e) => {
+                  setFilters({
+                    ...filters,
+                    totalRaise: e,
+                  });
+                }}
+              />
+              <p>Personal Allocation:</p>
+              <Slider
+                range={{ draggableTrack: true }}
+                defaultValue={[0, 0.09]}
+                onAfterChange={(e) => {
+                  setFilters({
+                    ...filters,
+                    personalAllocation: e,
+                  });
+                }}
+              />
+            </div>
+            <div className="funded-cards-btn">
+              <button
+                className="funded-cards-btn-filter"
+                onClick={handleFilter}
+              >
+                Filter
+              </button>
+              <button className="funded-cards-btn-clear" onClick={handleClear}>
+                Clear
+              </button>
+            </div>
+            <InfiniteScroll
+              style={{ overflow: "hidden" }}
+              dataLength={dataCards.length}
+              next={loadMore}
+              hasMore={true}
+            >
+              <div className="row">
+                {dataCards.map((e, i) => (
+                  <div className="column" key={i}>
+                    <Cards data={e} />
+                  </div>
+                ))}
+              </div>
+            </InfiniteScroll>
           </div>
-          <button className="fundedproject-loadmore" onClick={showMoreItems}>
+          <button className="fundedproject-loadmore" onClick={loadMore}>
             See All Funded Projects
           </button>
         </div>

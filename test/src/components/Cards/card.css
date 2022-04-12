@@ -125,6 +125,7 @@
 .fundedproject-card__image {
   width: 352px;
   height: 164px;
+  border-radius: 12px;
   object-fit: cover;
 }
 .fundedproject-card__status {
@@ -147,8 +148,25 @@
   object-fit: cover;
 }
 @media screen and (max-width: 1024px) {
-  .fundedproject-card__image{
+  .fundedproject-card__image {
     width: 100%;
     object-fit: cover;
+  }
+}
+@media screen and (max-width: 768px) {
+  .fundedproject-card__image {
+    height: 100%;
+  }
+  .fundedproject-card__image-poster {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+@media screen and (max-width: 375px) {
+  .fundedproject-card__image-poster {
+    width: 60px;
+    height: 60px;
+    padding: 10px;
   }
 }
